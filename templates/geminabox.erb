@@ -1,0 +1,78 @@
+#!/bin/sh
+#
+# geminabox init.d script
+#
+# HEAVILY borrowed from cupsd's script
+
+# chkconfig: - 99 01
+# description: This script starts the geminabox server
+# processname: geminabox
+
+# Source function library.
+. /etc/init.d/functions
+
+name=geminabox
+prog="/usr/bin/thin -p <%= port %> -c <%= root %> -e production --log <%= root %>/geminabox.log --tag $name --daemonize"
+re="\[$name\]"
+
+function restart {
+    $prog restart
+    RETVAL=$?
+    case $RETVAL in
+        0) echo "okay" ;;
+        *) echo "failed" ;;
+    esac
+    [ $RETVAL = 0 ]
+}
+
+function start {
+    if status ; then
+        echo $"Already running"
+        RETVAL=1
+    else
+        echo -n $"Starting $name: "
+	$prog start
+        RETVAL=$?
+        case $RETVAL in
+            0) echo "okay" ;;
+            *) echo "failed" ;;
+        esac
+    fi
+    [ $RETVAL = 0 ]
+}
+
+function status {
+    echo -n $"Status $name: "
+    pid=$(pgrep -f $re)
+    RETVAL=$?
+    case $RETVAL in
+        0) echo "running pid = $pid" ;;
+        1) echo "not running" ;;
+    esac
+    [ $RETVAL = 0 ]
+}
+
+function stop {
+    echo -n $"Stopping $name: "
+    $prog stop
+    RETVAL=$?
+    case $RETVAL in
+        0) echo "okay" ;;
+        *) echo "failed" ;;
+    esac
+    [ $RETVAL = 0 ]
+}
+
+case $1 in
+    debug) debug ;;
+    hup) hup ;;
+    restart) restart ;;
+    start) start ;;
+    status) status ;;
+    stop) stop ;;
+    *)
+        echo $"Usage: $0 {restart|start|status|stop}"
+        RETVAL=4
+        ;;
+esac
+exit $RETVAL

@@ -23,9 +23,10 @@ class geminabox (
   $datadir = "/var/lib/geminabox",
   $user    = "geminabox",
   $group   = "geminabox",
-  $version = "~> 0.8",
-  $port    = 8080,
+  $version = "~> 0.10.1",
+  $port    = 8080
 ) {
+
   group { $group:
     ensure => 'present',
     system => true,
@@ -70,18 +71,21 @@ class geminabox (
     ensure   => $version,
   }
 
-  file { '/etc/init/geminabox.conf':
+  file { '/etc/init.d/geminabox':
     ensure => 'present',
     owner  => 'root',
     group  => 'root',
-    content => template('geminabox/geminabox.conf.erb')
+    mode => '0755',
+    content => template('geminabox/geminabox.erb'),
   }
 
   service { 'geminabox':
     ensure     => 'running',
     enable     => true,
-    subscribe => [
-      File['/etc/init/geminabox.conf'],
+    hasstatus  => true,
+    hasrestart => true,
+    subscribe  => [
+      File['/etc/init.d/geminabox'],
       File["$root/config.ru"],
     ],
   }

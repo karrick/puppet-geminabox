@@ -1,4 +1,4 @@
-name    'dgoodlad-geminabox'
+name    'puppet-geminabox'
 version '0.1.1'
 summary 'Installs and runs the geminabox rubygem server'
 description "Installs the `geminabox` rubygem server, and configures it to run
