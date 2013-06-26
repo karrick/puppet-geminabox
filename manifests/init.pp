@@ -24,7 +24,7 @@ class geminabox (
   $user    = "geminabox",
   $group   = "geminabox",
   $version = "~> 0.10.1",
-  $port    = 8080
+  $port    = 80
 ) {
 
   group { $group:
@@ -89,4 +89,11 @@ class geminabox (
       File["$root/config.ru"],
     ],
   }
+
+  firewall { '100 allow http and https access':
+    port   => [80, 443],
+    proto  => tcp,
+    action => accept,
+  }
+
 }
